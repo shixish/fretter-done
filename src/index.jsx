@@ -13,35 +13,48 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.note = Note.fromGuitar();
-
     // > The only place where you can assign this.state is the constructor.
     //  Need to use this.setState otherwise.
     this.state = {
-      date: new Date(),
-      note: this.note.name
+      note: ''
     };
   }
 
   componentDidMount() {
-    window.addEventListener('keydown', (e)=>{
+    this.newNote();
+    window.addEventListener('keyup', (e)=>{
+      // console.log(e);
       if (e.code === 'Space'){
         this.next();
-      } else if (e.code === 'Enter'){
+      } else if (e.code === 'Enter' || e.code === 'NumpadEnter'){
         this.play();
       }
     });
   }
 
-  next(){
-    this.note = Note.fromGuitar();
+  newNote(){
+    let old = this.note;
+    do{
+      this.note = Note.fromGuitar('E');
+    }while(old && this.note.name === old.name);
     this.setState({
       note: this.note.name
     });
+    return this;
+  }
+
+  next(){
+    this.play(); //replay the old note before moving on..
+    setTimeout(()=>{
+      this.newNote();  
+      this.play();
+    }, 400);
   }
 
   play(){
-    this.note.play(synth, '8n');
+    this.note.play(synth, '4n');
+    console.log(this.note);
+    return this;
   }
 
   render(){

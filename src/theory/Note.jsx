@@ -126,14 +126,16 @@ module.exports = class Note{
     return this.name;
   }
 
-  static fromGuitar (_options){
-    let options = _options||{};
-    // let chroma = options.chroma>=0?options.chroma:Math.round(Math.random()*11);
-    // let octave = options.octave>=0?options.octave:Math.round(Math.random()*(octave_range[1]-octave_range[0])+octave_range[0]);
-    // let note = octave*12+chroma;
-    let duration = options.duration>0?options.duration:1;
-    let note = Math.floor(Math.random()*(MIDI.guitarRange[1]-MIDI.guitarRange[0]+1)+MIDI.guitarRange[0]);
-    return new Note(note, duration);
+  static fromGuitar(string){
+    let range = [MIDI.guitarRange[0], MIDI.guitarRange[1]];
+    if (string === 'E'){
+      range[1] = MIDI.guitarRange[0]+12;
+    }else if (string === 'A'){
+      range[0] = MIDI.guitarRange[0]+5;
+      range[1] = MIDI.guitarRange[0]+5+12;
+    }
+    let note = Math.floor(Math.random()*(range[1]-range[0]+1)+range[0]);
+    return new Note(note, 1);
     //let note = Math.round(Math.random()*(MIDI.key_range[1]-MIDI.key_range[0])+MIDI.key_range[0]); 
   }
 
