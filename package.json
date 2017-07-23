@@ -14,7 +14,8 @@
   "dependencies": {
     "pizzicato": "^0.6.1",
     "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "react-dom": "^15.6.1",
+    "tone": "^0.10.0"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
