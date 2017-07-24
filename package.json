@@ -12,10 +12,11 @@
     "build:prod": "webpack -p --progress --profile --colors"
   },
   "dependencies": {
+    "material-ui": "^0.18.7",
     "pizzicato": "^0.6.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "react-toolbox": "^2.0.0-beta.12",
+    "react-tap-event-plugin": "^2.0.1",
     "tone": "^0.10.0"
   },
   "devDependencies": {
@@ -25,7 +26,6 @@
     "babel-preset-react": "^6.24.1",
     "css-loader": "^0.28.4",
     "file-loader": "^0.11.2",
-    "postcss": "^6.0.8",
     "postcss-cssnext": "^3.0.2",
     "postcss-import": "^10.0.0",
     "postcss-loader": "^2.0.6",

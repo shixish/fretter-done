@@ -3,7 +3,14 @@ import './index.sss';
 
 import React from 'react';
 import {render} from 'react-dom';
-import {Button} from 'react-toolbox/lib/button';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+//See: http://www.material-ui.com/#/
+import injectTapEventPlugin from 'react-tap-event-plugin';
+import RaisedButton from 'material-ui/RaisedButton';
+
+// Needed for onTouchTap 
+// http://stackoverflow.com/a/34015469/988941 
+injectTapEventPlugin(); //Docs say this is temporary until React's native implementation becomes available...
 
 // import Pizzicato from 'pizzicato';
 // import Tone from 'tone';
@@ -70,10 +77,10 @@ class App extends React.Component {
 
   render(){
     return <div>
-      <Button label="Hello World!" />
+      <RaisedButton label="Default" />
       <div id="note">{this.state.note}</div>
     </div>;
   }
 }
 
-render(<App />, document.getElementById('app'));
+render(<MuiThemeProvider><App /></MuiThemeProvider>, document.getElementById('app'));

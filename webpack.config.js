@@ -13,13 +13,6 @@ module.exports = (env)=>{
     devServer: {
       contentBase: './dist'
     },
-    // postcss: () => {
-    //   return [
-    //     /* eslint-disable global-require */
-    //     require('postcss-cssnext'),
-    //     /* eslint-enable global-require */
-    //   ];
-    // },
     module: {
       rules: [
         {
@@ -45,22 +38,6 @@ module.exports = (env)=>{
             }
           ]
         },
-        {
-          test: /node_modules.+\.css$/,
-          use: [
-            { loader: 'style-loader', options: { sourceMap: DEVEL } },
-            { loader: 'css-loader', options: { sourceMap: DEVEL, importLoaders: true, modules: true } },
-            { loader: 'postcss-loader', options: { sourceMap: DEVEL } }
-            // { loader: 'sass-loader', options: { sourceMap: DEVEL } }
-          ]
-        },
-        // {
-        //   test: /\.css$/,
-        //   loaders: [
-        //     'style-loader',
-        //     'css-loader?sourceMap&modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss?sourceMap&sourceComments',
-        //   ],
-        // },
         {
           test: /\.(png|svg|jpg|gif)$/,
           use: [
