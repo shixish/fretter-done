@@ -1,6 +1,10 @@
 import './index.sss';
+// import styles from './index.css';
+
 import React from 'react';
 import {render} from 'react-dom';
+import {Button} from 'react-toolbox/lib/button';
+
 // import Pizzicato from 'pizzicato';
 // import Tone from 'tone';
 import Note from './theory/Note.jsx';
@@ -66,6 +70,7 @@ class App extends React.Component {
 
   render(){
     return <div>
+      <Button label="Hello World!" />
       <div id="note">{this.state.note}</div>
     </div>;
   }
