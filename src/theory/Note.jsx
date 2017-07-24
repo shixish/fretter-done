@@ -1,4 +1,6 @@
+import Tone from 'tone';
 import MIDI from './MIDI.jsx';
+let synth = new Tone.Synth().toMaster();
 
 // let delay = 0; // play note right away
 // let length = 0.75;
@@ -12,107 +14,107 @@ let beat_length = 1000/(tempo/60);
 let octave_range = [2, 5];
 
 module.exports = class Note{
-  constructor(_note, _duration){
+  constructor(){
     if (arguments.length === 2){
-      let [_note, _duration] = arguments;
-      if (typeof _note === 'string')
-        _note = MIDI.noteNames.indexOf(_note);
-      this.note(_note);
-      this.duration(_duration);
+      let [note, duration] = arguments;
+      if (typeof note === 'string')
+        note = MIDI.noteNames.indexOf(note);
+      this.note(note);
+      this.duration(duration);
     }else if (arguments.length === 3){
-      let [_chroma, _octave, _duration] = arguments;
-      this.chroma = parseInt(_chroma);
-      this.octave = parseInt(_octave);
-      this.note = this.octave*12+this.chroma;
-      this.duration(_duration);
+      let [chroma, octave, duration] = arguments;
+      this._chroma = parseInt(chroma);
+      this._octave = parseInt(octave);
+      this._note = this._octave*12+this._chroma;
+      this.duration(duration);
     }
   }
 
   get name(){
-    return MIDI.letters[this.chroma] + this.octave;
+    return MIDI.letters[this._chroma] + this._octave;
   }
 
   get keyColor(){
-    if (this.chroma === 1 || this.chroma === 3 || this.chroma === 6 || this.chroma === 8 || this.chroma === 10){
+    if (this._chroma === 1 || this._chroma === 3 || this._chroma === 6 || this._chroma === 8 || this._chroma === 10){
       return 'black';
     }else{
       return 'white';
     }
   }
 
-  note(_note){
-    if (_note){
-      this.note = parseInt(_note);
-      this.chroma = this.note%12;
-      this.octave = Math.floor(this.note/12);
+  note(note){
+    if (note){
+      this._note = parseInt(note);
+      this._chroma = this._note%12;
+      this._octave = Math.floor(this._note/12);
       return this;
     }else{
-      return this.note;
+      return this._note;
     }
   }
 
-  octave(_octave){
-    if (_octave){
-      this.octave = parseInt(_octave);
-      this.note = this.octave*12+this.chroma;
+  octave(octave){
+    if (octave){
+      this._octave = parseInt(octave);
+      this._note = this._octave*12+this._chroma;
       return this;
     }else{
-      return this.octave;
+      return this._octave;
     }
   }
 
   octaveUp(){
-    this.octave(this.octave+1);
+    this._octave(this._octave+1);
     return this;
   }
 
   octaveDown(){
-    this.octave(this.octave-1);
+    this._octave(this._octave-1);
     return this;
   }
 
-  chroma(_chroma){
-    if (_chroma){
-      this.chroma = parseInt(chroma);
-      this.note = this.octave*12+this.chroma;
+  chroma(chroma){
+    if (chroma){
+      this._chroma = parseInt(chroma);
+      this._note = this._octave*12+this._chroma;
       return this;
     }else{
-      return this.chroma;
+      return this._chroma;
     }
   }
 
-  duration(_duration){
-    if (_duration){
-      this.duration = _duration;
+  duration(duration){
+    if (duration){
+      this._duration = duration;
       return this;
     }else{
-      return this.duration;
+      return this._duration || '4n';
     }
   }
 
   extend(amount){
     amount = (amount === undefined)?1:parseInt(amount);
-    this.duration += amount;
+    this._duration += amount;
     return this;
   }
 
   contract(amount){
     amount = (amount === undefined)?1:parseInt(amount);
-    this.duration -= amount;
+    this._duration -= amount;
     return this;
   }
 
   clone(){
-    return new Note(this.note, this.duration);
+    return new Note(this._note, this._duration);
   }
 
-  play(synth, duration){
-    synth.triggerAttackRelease(this.name, duration);
+  play(){
+    synth.triggerAttackRelease(this.name, '4n');//this._duration
   }
 
   // play(){
   //   //length = length || tempo;//play for a whole measure
-  //   let length = (this.duration*beat_length)/1000;
+  //   let length = (this._duration*beat_length)/1000;
   //   if (MIDI.api){
   //     MIDI.noteOn(0, note, velocity);
   //     MIDI.noteOff(0, note, length);
@@ -132,15 +134,28 @@ module.exports = class Note{
       range[1] = MIDI.guitarRange[0]+12;
     }else if (string === 'A'){
       range[0] = MIDI.guitarRange[0]+5;
-      range[1] = MIDI.guitarRange[0]+5+12;
+      range[1] = range[0]+12;
+    }else if (string === 'D'){
+      range[0] = MIDI.guitarRange[0]+5+5;
+      range[1] = range[0]+12;
+    }else if (string === 'G'){
+      range[0] = MIDI.guitarRange[0]+5+5+5;
+      range[1] = range[0]+12;
+    }else if (string === 'B'){
+      range[0] = MIDI.guitarRange[0]+5+5+5+4;
+      range[1] = range[0]+12;
+    }else if (string === 'e'){
+      range[0] = MIDI.guitarRange[0]+5+5+5+4+5;
+      range[1] = range[0]+12;
     }
+    console.log('Picking a note between', MIDI.noteNames[range[0]], 'and', MIDI.noteNames[range[1]]);
     let note = Math.floor(Math.random()*(range[1]-range[0]+1)+range[0]);
     return new Note(note, 1);
     //let note = Math.round(Math.random()*(MIDI.key_range[1]-MIDI.key_range[0])+MIDI.key_range[0]); 
   }
 
-  static generate (_options){
-    let options = _options||{};
+  static generate (options){
+    options = options||{};
     let chroma = options.chroma>=0?options.chroma:Math.round(Math.random()*11);
     let octave = options.octave>=0?options.octave:Math.round(Math.random()*(octave_range[1]-octave_range[0])+octave_range[0]);
     let duration = options.duration>0?options.duration:4;
