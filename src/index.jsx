@@ -161,8 +161,18 @@ class App extends React.Component {
         {this.stringMenuItems(this.state.string).map(c=><MenuItem key={c} value={c} primaryText={chordNames(c)} />)}
       </DropDownMenu>
       {/* <RaisedButton label="Default" style={{"vertical-align": "bottom"}}/> */}
-      <div id="note">{this.state.note}</div>
-      <div>{this.state.notesLabel}</div>
+      <div id="note">
+        <h1>{this.state.note}</h1>
+        <h3>{this.state.notesLabel}</h3>
+      </div>
+      <div id="legend">
+        <ul>
+          <li>Enter: Play sound</li>
+          <li>Space: Next</li>
+          <li>Left/Right: Change strings</li>
+          <li>Up/Down: Change chord quality</li>
+        </ul>
+      </div>
     </div>;
   }
 }
