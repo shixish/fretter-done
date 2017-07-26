@@ -3,39 +3,75 @@ import Note from './Note.jsx';
 let polySynth = new Tone.PolySynth(6, Tone.Synth).toMaster();
 
 const Chords = {
-  'maj': ['P1', 'M3', 'P5'],
-  'min': ['P1', 'm3', 'P5'],
-  'aug': ['P1', 'M3', 'A5'],
-  'dim': ['P1', 'm3', 'd5'],
-  'maj7': ['P1', 'M3', 'P5', 'M7'],
-  'min7': ['P1', 'm3', 'P5', 'm7'],
-  'dom7': ['P1', 'M3', 'P5', 'm7'],
-  'dim7': ['P1', 'm3', 'd5', 'm7'],
-  
-  //E-form barre chords
-  'Emaj': ['P1', 'P5', 'P8', 'M10', 'P12', 'P15'],
-  'Emin': ['P1', 'P5', 'P8', 'm10', 'P12', 'P15'],
-  'Emaj7': ['P1', 'M7', 'M10', 'P12'],
-  'Emin7': ['P1', 'P5', 'm7', 'm10', 'P12', 'P15'], //We sometimes remove the P5
-  'Edom7': ['P1', 'P5', 'm7', 'M10', 'P12', 'P15'],
-  'Edim7': ['P1', 'm7', 'm10', 'd12'],
-
-  //A-form barre chords
-  'Amaj': ['P1', 'P5', 'P8', 'M10'],
-  'Amin': ['P1', 'P5', 'P8', 'm10', 'P12'],
-  'Amaj7': ['P1', 'P5', 'M7', 'M10', 'P12'],
-  'Amin7': ['P1', 'P5', 'm7', 'm10', 'P12'],
-  'Adom7': ['P1', 'P5', 'm7', 'M10', 'P12'],
-  'Adim7': ['P1', 'd5', 'm7', 'm10'],
-
-  //D-form barre chords
-  'Amaj': ['P1', 'P5', 'P8', 'M10'],
-  'Amin': ['P1', 'P5', 'P8', 'm10'],
-  // 'Amaj7': ['P1', 'P5', 'M7', 'M10'],
-  // 'Amin7': ['P1', 'P5', 'm7', 'm10'],
-  // 'Adom7': ['P1', 'P5', 'm7', 'M10'],
-  // 'Adim7': ['P1', 'd5', 'm7', 'm10'],
+  'maj': {
+    default: ['P1', 'M3', 'P5'],
+    E: ['P1', 'P5', 'P8', 'M10', 'P12', 'P15'],
+    A: ['P1', 'P5', 'P8', 'M10'],
+    D: ['P1', 'P5', 'P8', 'M10']
+    // G:
+    // B:
+    // e:
+  },
+  'min': {
+    default: ['P1', 'm3', 'P5'],
+    E: ['P1', 'P5', 'P8', 'm10', 'P12', 'P15'],
+    A: ['P1', 'P5', 'P8', 'm10', 'P12'],
+    D: ['P1', 'P5', 'P8', 'm10']
+    // G:
+    // B:
+    // e:
+  },
+  'aug': {
+    default: ['P1', 'M3', 'A5'],
+  },
+  'dim': {
+    default: ['P1', 'm3', 'd5'],
+  },
+  'maj7': {
+    default: ['P1', 'M3', 'P5', 'M7'],
+    E: ['P1', 'M7', 'M10', 'P12'],
+    A: ['P1', 'P5', 'M7', 'M10', 'P12'],
+    // D:
+    // G:
+    // B:
+    // e:
+  },
+  'min7': {
+    default: ['P1', 'm3', 'P5', 'm7'],
+    E: ['P1', 'P5', 'm7', 'm10', 'P12', 'P15'],//We sometimes remove the P5
+    A: ['P1', 'P5', 'm7', 'm10', 'P12'],
+    // D:
+    // G:
+    // B:
+    // e:
+  },
+  'dom7': {
+    default: ['P1', 'M3', 'P5', 'm7'],
+    E: ['P1', 'P5', 'm7', 'M10', 'P12', 'P15'],
+    A: ['P1', 'P5', 'm7', 'M10', 'P12'],
+    // D:
+    // G:
+    // B:
+    // e:
+  },
+  'dim7': {
+    default: ['P1', 'm3', 'd5', 'm7'],
+    E: ['P1', 'm7', 'm10', 'd12'],
+    A: ['P1', 'd5', 'm7', 'm10'],
+    // D:
+    // G:
+    // B:
+    // e:
+  },
 };
+let Voicings = Object.keys(Chords).reduce((ret, key)=>{
+  for (let voicing in Chords[key]){
+    if (!ret[voicing]) ret[voicing] = {};
+    ret[voicing][key] = Chords[key][voicing];
+  }
+  return ret;
+}, {});
+
 const Intervals = {
   'P1':0,'A1':1,
   'd2':0,'m2':1,'M2':2,'A2':3,
@@ -48,8 +84,14 @@ const Intervals = {
 };
 
 module.exports = class Chord{
-  constructor(root, quality){
+  static StringChords(voicing){
+    if (voicing === 'all') voicing = 'default';
+    return Object.keys(Voicings[voicing] || {}) || [];
+  }
+
+  constructor(root, quality, voicing){
     this._root = root || new Note(60);
+    this._voicing = voicing !== 'all' && voicing || 'default';
     this._quality = Chords[quality]?quality:'maj';
     this._duration = this._root.duration();
     //this.chromas = [_scale.note[this._root]];
@@ -166,7 +208,7 @@ module.exports = class Chord{
   }
   
   reset(){
-    var pattern = Chords[this._quality] || Chords.maj;
+    var pattern = Chords[this._quality][this._voicing];
     for (var i in pattern){
       var step = Chord.getStepSize(pattern[i]);
       if (step === 0){
